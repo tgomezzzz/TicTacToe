@@ -1,7 +1,12 @@
-public class Board {
+import java.awt.Graphics2D;
+import javax.swing.Icon;
+import java.awt.geom.Rectangle2D;
+
+public class Board implements Drawable{
 
     private int[][] b;
     private int edgeSize;
+    private Bundle tiles;
     private final String[] PAWNS = {" ", "x", "o"};
 
     public Board(){
@@ -10,7 +15,17 @@ public class Board {
 
     public Board(int n){
         this.b = new int[n][n];
+        this.tiles = new Bundle(n);
         this.edgeSize = n;
+    }
+
+    @Override
+    public void draw(Graphics2D g){
+        Rectangle2D.Double rect = new Rectangle2D.Double(100, 100, 100, 100);
+        tiles.addIcon(2, new O(300, 300));
+        tiles.addIcon(4, new O(500, 100));
+        g.draw(rect);
+        tiles.draw(g);
     }
 
     public void drawBoard(){
