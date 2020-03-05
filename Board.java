@@ -2,13 +2,18 @@ import java.awt.*;
 //import java.awt.Graphics2D;
 import javax.swing.Icon;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Line2D;
+
 //import java.awt.color.*;
 
 public class Board implements Drawable{
 
+    private static int BOARD_SIZE = 800;
+
     private int[][] b;
     private int edgeSize;
     private Bundle tiles;
+    private Line2D.Double[] boardLines;
     private final String[] PAWNS = {" ", "x", "o"};
 
     public Board(){
@@ -17,22 +22,26 @@ public class Board implements Drawable{
 
     public Board(int n){
         this.b = new int[n][n];
-        this.tiles = new Bundle(n);
         this.edgeSize = n;
+        this.tiles = new Bundle(n);
+        this.boardLines = new Line2D.Double[(n*2)-2];
+        int margin = 50;
+        int lineLength = BOARD_SIZE - (margin*2);
+        int distBetweenLines = lineLength/n;
+        int boardLinePos = 0;
+        for (int i = 1; i < n; i++){
+            boardLines[boardLinePos++] = new Line2D.Double(margin + (i*distBetweenLines), margin, margin + (i*distBetweenLines), margin + lineLength);
+            boardLines[boardLinePos++] = new Line2D.Double(margin, margin + (i*distBetweenLines), margin + lineLength, margin + (i*distBetweenLines));
+        }
     }
 
     @Override
     public void draw(Graphics2D g){
-        Rectangle2D.Double rect = new Rectangle2D.Double(100, 100, 100, 100);
-        tiles.addIcon(2, new O(300, 300));
-        tiles.addIcon(4, new O(500, 100));
-        tiles.addIcon(6, new X(300, 500));
-        tiles.addIcon(10, new X(700, 700));
-        
-        g.setColor(Color.GREEN);
-        g.setStroke(new BasicStroke(10));
-        g.fill(rect);
-        g.draw(rect);
+        g.setColor(Color.BLACK);
+        g.setStroke(new BasicStroke(5));
+        for (Line2D.Double l : boardLines){
+            g.draw(l);
+        }
         tiles.draw(g);
     }
 

@@ -8,16 +8,17 @@ public class Main {
         final int FRAME_WIDTH = 800;
         final int FRAME_HEIGHT = 800;
         JFrame frame = new JFrame();
-        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setVisible(true);
-        frame.setBackground(Color.BLUE);
+        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        frame.setBackground(Color.CYAN);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         Board b = new Board(10);
-        Icon board = new MyIcon(b, FRAME_WIDTH, FRAME_HEIGHT);
+        Icon board = new MyIcon(b, FRAME_WIDTH/2, FRAME_HEIGHT/2);
         JLabel label = new JLabel(board);
-        frame.add(label);
-        frame.pack();
+    
+        frame.add(label, BorderLayout.CENTER);
+        //frame.pack();
         //frame.repaint();
         // b.setTile(3, 4, 1);
         // b.setTile(5, 5, 2);

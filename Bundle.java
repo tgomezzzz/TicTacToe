@@ -9,13 +9,11 @@ public class Bundle implements Drawable {
 
     @Override
     public void draw(Graphics2D g){
-        System.out.println("running bundle draw");
         for (Drawable d : bundle){
             if (d != null){
                 d.draw(g);
             }
         }
-        System.out.println("what the fuck");
     }
 
     public void addIcon(int i, Drawable d){
