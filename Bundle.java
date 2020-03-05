@@ -16,6 +16,11 @@ public class Bundle implements Drawable {
         }
     }
 
+    @Override
+    public void mouseOver(Graphics2D g){
+
+    }
+
     public void addIcon(int i, Drawable d){
         if (i < 0 || i > bundle.length - 1){
             return;

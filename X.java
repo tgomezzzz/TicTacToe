@@ -1,19 +1,17 @@
 import java.awt.geom.Line2D;
-
-import javafx.scene.shape.Line;
-
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.Color;
 
-public class X implements Drawable {
+public class X extends Space {
 
     private Line2D.Double x1, x2;
-    private final int RAD = 22;
 
     public X(int x, int y){
-        x1 = new Line2D.Double(x-RAD, y-RAD, x+RAD, y+RAD);
-        x2 = new Line2D.Double(x-RAD, y+RAD, x+RAD, y-RAD);
+        super(x, y);
+        int rad = Math.sqrt(WIDTH / 2);
+        x1 = new Line2D.Double(x - rad, y - rad, x + rad, y + rad);
+        x2 = new Line2D.Double(x - rad, y + rad, x + rad, y - rad);
     }
 
     @Override

@@ -1,41 +1,41 @@
 import java.awt.*;
-//import java.awt.Graphics2D;
 import javax.swing.Icon;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Line2D;
 
-//import java.awt.color.*;
-
 public class Board implements Drawable{
-
-    private static int BOARD_SIZE = 800;
 
     private int[][] b;
     private int edgeSize;
     private Bundle tiles;
     private Line2D.Double[] boardLines;
-    private final String[] PAWNS = {" ", "x", "o"};
 
     public Board(){
         this(3);
     }
 
     public Board(int n){
+        BoardInfo.setN(n);
         this.b = new int[n][n];
         this.edgeSize = n;
         this.tiles = new Bundle(n);
-        this.boardLines = new Line2D.Double[(n*2)-2];
-        int margin = 50;
-        int lineLength = BOARD_SIZE - (margin*2);
-        int distBetweenLines = lineLength/n;
+        this.boardLines = new Line2D.Double[(n * 2) - 2];
+        generateBoard(n);
+    }
+
+    public void generateBoard(int n){
+        int margin = BoardInfo.BOARD_SIZE / 10;
+        int lineLength = BoardInfo.BOARD_SIZE - (margin * 2);
+        int distBetweenLines = lineLength / n;
         int boardLinePos = 0;
         for (int i = 1; i < n; i++){
-            boardLines[boardLinePos++] = new Line2D.Double(margin + (i*distBetweenLines), margin, margin + (i*distBetweenLines), margin + lineLength);
-            boardLines[boardLinePos++] = new Line2D.Double(margin, margin + (i*distBetweenLines), margin + lineLength, margin + (i*distBetweenLines));
+            int marginOffset = margin + (i * distBetweenLines);
+            this.boardLines[boardLinePos++] = new Line2D.Double(marginOffset, margin, marginOffset, margin + lineLength);
+            this.boardLines[boardLinePos++] = new Line2D.Double(margin, marginOffset, margin + lineLength, marginOffset);
         }
     }
 
-    @Override
+    @Override 
     public void draw(Graphics2D g){
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(5));
@@ -45,12 +45,16 @@ public class Board implements Drawable{
         tiles.draw(g);
     }
 
+    @Override
+    public void mouseOver(Graphics2D g){
+
+    }
+
     public void drawBoard(){
         for (int i = 0; i < edgeSize; i++){
             for (int j = 0; j < edgeSize; j++){
-                System.out.print(PAWNS[b[i][j]] + " | ");
+                //update later
             }
-            System.out.println();
         }
     }
 
