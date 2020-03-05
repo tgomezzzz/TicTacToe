@@ -1,10 +1,11 @@
 import java.awt.*;
-import javax.swing.Icon;
-import java.awt.geom.Rectangle2D;
+import javax.swing.*;
+import java.awt.event.MouseListener;
 import java.awt.geom.Line2D;
 
-public class Board implements Drawable{
+public class Board extends JComponent implements Drawable {
 
+    private static final long serialVersionUID = 1L;
     private int[][] b;
     private int edgeSize;
     private Bundle tiles;
@@ -36,13 +37,15 @@ public class Board implements Drawable{
     }
 
     @Override 
-    public void draw(Graphics2D g){
+    public void paintComponent(Graphics gIn){
+        Graphics2D g = (Graphics2D) gIn;
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(5));
+        tiles.addIcon(1, new X(100, 100));
         for (Line2D.Double l : boardLines){
             g.draw(l);
         }
-        tiles.draw(g);
+        tiles.paintComponent(gIn);
     }
 
     @Override

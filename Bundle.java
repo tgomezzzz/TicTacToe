@@ -1,4 +1,6 @@
 import java.awt.Graphics2D;
+import java.awt.*;
+
 public class Bundle implements Drawable {
 
     private Drawable[] bundle;
@@ -8,10 +10,10 @@ public class Bundle implements Drawable {
     }
 
     @Override
-    public void draw(Graphics2D g){
+    public void paintComponent(Graphics g){
         for (Drawable d : bundle){
             if (d != null){
-                d.draw(g);
+                d.paintComponent(g);
             }
         }
     }

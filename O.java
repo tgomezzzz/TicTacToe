@@ -1,7 +1,5 @@
 import java.awt.geom.Ellipse2D;
-import java.awt.Graphics2D;
-import java.awt.BasicStroke;
-import java.awt.Color;
+import java.awt.*;
 
 public class O extends Space {
 
@@ -13,7 +11,8 @@ public class O extends Space {
     }
 
     @Override
-    public void draw(Graphics2D g){
+    public void paintComponent(Graphics gIn){
+        Graphics2D g = (Graphics2D) gIn;
         g.setColor(Color.RED);
         g.draw(e);
     }

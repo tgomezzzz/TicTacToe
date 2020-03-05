@@ -1,8 +1,5 @@
-import javafx.geometry.Rectangle2D;
-
-import java.awt.Graphics2D;
-import java.awt.BasicStroke;
-import java.awt.Color;
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 public class Space implements Drawable {
 
@@ -13,11 +10,11 @@ public class Space implements Drawable {
     public Space(int a, int b){
         this.x = a;
         this.y = b;
-        this.mouseSpace = new Rectangle2D.Double(x - WIDTH / 2, y - width / 2, WIDTH, WIDTH);
+        this.mouseSpace = new Rectangle2D.Double(x - WIDTH / 2, y - WIDTH / 2, WIDTH, WIDTH);
     }
 
     @Override
-    public void draw(Graphics2D g){
+    public void paintComponent(Graphics g){
         //no icon for a space
     }
 
