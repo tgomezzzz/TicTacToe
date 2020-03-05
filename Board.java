@@ -1,6 +1,8 @@
-import java.awt.Graphics2D;
+import java.awt.*;
+//import java.awt.Graphics2D;
 import javax.swing.Icon;
 import java.awt.geom.Rectangle2D;
+//import java.awt.color.*;
 
 public class Board implements Drawable{
 
@@ -24,6 +26,12 @@ public class Board implements Drawable{
         Rectangle2D.Double rect = new Rectangle2D.Double(100, 100, 100, 100);
         tiles.addIcon(2, new O(300, 300));
         tiles.addIcon(4, new O(500, 100));
+        tiles.addIcon(6, new X(300, 500));
+        tiles.addIcon(10, new X(700, 700));
+        
+        g.setColor(Color.GREEN);
+        g.setStroke(new BasicStroke(10));
+        g.fill(rect);
         g.draw(rect);
         tiles.draw(g);
     }

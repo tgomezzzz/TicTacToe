@@ -15,6 +15,7 @@ public class Bundle implements Drawable {
                 d.draw(g);
             }
         }
+        System.out.println("what the fuck");
     }
 
     public void addIcon(int i, Drawable d){
