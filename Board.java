@@ -13,6 +13,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
     private Bundle tiles;
     private Line2D.Double[] boardLines;
     private MouseOver mouseEntry;
+    private boolean[] freeIndeces;
 
     public Board(){
         this(3);
@@ -23,11 +24,19 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         this.b = new int[n][n];
         this.edgeSize = n;
         this.tiles = new Bundle(n);
+        this.freeIndeces = new boolean[n * n];
         this.boardLines = new Line2D.Double[(n * 2) - 2];
         generateBoard(n);
     }
 
     public void generateBoard(int n){
+        this.addMouseListener(this);
+        this.addMouseMotionListener(this);
+        
+        for (int i = 0; i < freeIndeces.length; i++){
+            freeIndeces[i] = true;
+        }
+
         int lineLength = BoardInfo.BOARD_SIZE - (BoardInfo.MARGIN * 2);
         int distBetweenLines = lineLength / n;
         int boardLinePos = 0;
@@ -41,8 +50,6 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
     @Override 
     public void paintComponent(Graphics gIn){
         Graphics2D g = (Graphics2D) gIn;
-        this.addMouseListener(this);
-        this.addMouseMotionListener(this);
 
         if (mouseEntry != null){
             mouseEntry.paintComponent(gIn);
@@ -63,7 +70,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             return false;
         }
         if (b[r][c] != 0){
-            //System.out.println("Oops! Tile (" + r + ", " + c + ") is aready occupied!");
+            System.out.println("Oops! Tile (" + r + ", " + c + ") is aready occupied!");
             return false;
         }
         b[r][c] = pawn;
@@ -84,11 +91,25 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         return (gridPos * BoardInfo.entryWidth) + BoardInfo.MARGIN;
     }
 
-    public int gridToLinearPos(int gridX, int gridY){
+    public int gridToArrayPos(int gridX, int gridY){
         if (gridX == -1 || gridY == -1){
             return -1;
         } 
-        return (gridX * (edgeSize - 1)) + gridY;
+        return (gridY * (edgeSize)) + gridX;
+    }
+
+    public int arrayToGridX(int arrPos){
+        if (arrPos < 0 || arrPos > edgeSize - 1){
+            return -1;
+        }
+        return arrPos / edgeSize;
+    }
+
+    public int arrayToGridY(int arrPos){
+        if (arrPos < 0 || arrPos > edgeSize - 1){
+            return -1;
+        }
+        return arrPos % edgeSize;
     }
 
     @Override
@@ -109,7 +130,20 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         int gridY = mouseToGridPos(e.getY());
 
         if (setTile(gridX, gridY, 2)){
-            tiles.addIcon(gridToLinearPos(gridX, gridY), new X(gridToMousePos(gridX) + BoardInfo.entryWidth / 2, gridToMousePos(gridY) + BoardInfo.entryWidth / 2));
+            int index = gridToArrayPos(gridX, gridY);
+            if (freeIndeces[index]){
+                tiles.addIcon(index, new X(gridToMousePos(gridX) + BoardInfo.entryWidth / 2, gridToMousePos(gridY) + BoardInfo.entryWidth / 2));
+                freeIndeces[index] = false;
+                // while (freeIndeces[index] == false) {
+                //     index = (int) (Math.random()*(freeIndeces.length+1));
+                // }
+                // System.out.println(index);
+                // gridX = arrayToGridX(index);
+                // gridY = arrayToGridY(index);
+                // tiles.addIcon(index, new O(gridToMousePos(gridX) + BoardInfo.entryWidth / 2, gridToMousePos(gridY) + BoardInfo.entryWidth / 2));
+                // freeIndeces[index] = false;
+            }
+            
         }
         this.repaint();
     }

@@ -9,7 +9,7 @@ public class Main {
         final int FRAME_HEIGHT = 600;
         
         JFrame frame = new JFrame();
-        Board b = new Board(2);
+        Board b = new Board(4);
         frame.getContentPane().add(b);
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setVisible(true);
