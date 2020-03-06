@@ -1,13 +1,12 @@
 import java.awt.geom.Ellipse2D;
 import java.awt.*;
 
-public class O extends Space {
+public class O implements Drawable {
 
     private Ellipse2D.Double e;
 
     public O(int x, int y){
-        super(x, y);
-        e = new Ellipse2D.Double(x, y, RAD, RAD);
+        e = new Ellipse2D.Double(x, y, BoardInfo.entryWidth / 1.5, BoardInfo.entryWidth / 1.5);
     }
 
     @Override
@@ -15,6 +14,7 @@ public class O extends Space {
         Graphics2D g = (Graphics2D) gIn;
         g.setColor(Color.RED);
         g.draw(e);
+
     }
 
 }

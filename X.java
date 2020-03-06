@@ -1,13 +1,12 @@
 import java.awt.geom.Line2D;
 import java.awt.*;
 
-public class X extends Space {
+public class X implements Drawable {
 
     private Line2D.Double x1, x2;
 
     public X(int x, int y){
-        super(x, y);
-        int rad = (int)Math.sqrt(WIDTH / 2);
+        double rad = Math.sqrt((2 * BoardInfo.entryWidth * BoardInfo.entryWidth)) / 6;
         x1 = new Line2D.Double(x - rad, y - rad, x + rad, y + rad);
         x2 = new Line2D.Double(x - rad, y + rad, x + rad, y - rad);
     }
@@ -18,5 +17,6 @@ public class X extends Space {
         g.setColor(Color.BLUE);
         g.draw(x1);
         g.draw(x2);
+
     }
 }

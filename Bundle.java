@@ -10,17 +10,12 @@ public class Bundle implements Drawable {
     }
 
     @Override
-    public void paintComponent(Graphics g){
+    public void paintComponent(Graphics gIn){
         for (Drawable d : bundle){
             if (d != null){
-                d.paintComponent(g);
+                d.paintComponent(gIn);
             }
         }
-    }
-
-    @Override
-    public void mouseOver(Graphics2D g){
-
     }
 
     public void addIcon(int i, Drawable d){
