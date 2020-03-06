@@ -5,8 +5,10 @@ public class O implements Drawable {
 
     private Ellipse2D.Double e;
 
-    public O(int x, int y){
-        e = new Ellipse2D.Double(x, y, BoardInfo.entryWidth / 1.5, BoardInfo.entryWidth / 1.5);
+    public O(int r, int c, int width, Board b){
+        int x = b.gridToMousePos(r) + width / 4;
+        int y = b.gridToMousePos(c) + width / 4;
+        e = new Ellipse2D.Double(x, y, width, width);
     }
 
     @Override

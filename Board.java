@@ -7,23 +7,28 @@ import java.awt.geom.Line2D;
 
 public class Board extends JComponent implements Drawable, MouseListener, MouseMotionListener {
 
+    public int iconPixelSize;
+
     private static final long serialVersionUID = 1L;
     private int[][] b;
     private int edgeSize;
-    private Bundle tiles;
+    private int pixelSize;
+    private Grid tiles;
     private Line2D.Double[] boardLines;
     private MouseOver mouseEntry;
     private boolean[] freeIndeces;
 
     public Board(){
-        this(3);
+        this(3, 600);
     }
 
-    public Board(int n){
+    public Board(int n, int pixels){
         BoardInfo.setN(n);
         this.b = new int[n][n];
+        this.pixelSize = pixels;
         this.edgeSize = n;
-        this.tiles = new Bundle(n);
+        this.iconPixelSize = (pixelSize - BoardInfo.MARGIN) / edgeSize;
+        this.tiles = new Grid(n);
         this.freeIndeces = new boolean[n * n];
         this.boardLines = new Line2D.Double[(n * 2) - 2];
         generateBoard(n);
@@ -49,12 +54,11 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
 
     @Override 
     public void paintComponent(Graphics gIn){
-        Graphics2D g = (Graphics2D) gIn;
-
         if (mouseEntry != null){
             mouseEntry.paintComponent(gIn);
         }
 
+        Graphics2D g = (Graphics2D) gIn;
         g.setColor(Color.BLACK);
         g.setStroke(new BasicStroke(5));
         for (Line2D.Double l : boardLines){
@@ -73,7 +77,20 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             System.out.println("Oops! Tile (" + r + ", " + c + ") is aready occupied!");
             return false;
         }
+
         b[r][c] = pawn;
+        Drawable d;
+        if (pawn == 0) {
+            tiles.removeIcon(r, c);
+            return true;
+        } else if (pawn < 0){
+            int rad = iconPixelSize / 2;
+            d = new O(r, c, rad, this); 
+        } else {
+            int width = (int) Math.sqrt((2 * iconPixelSize * iconPixelSize)) / 6;
+            d = new X(r, c, width, this);
+        }
+        tiles.addIcon(r, c, d);
         return true;
     }
 
@@ -129,20 +146,21 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         int gridX = mouseToGridPos(e.getX());
         int gridY = mouseToGridPos(e.getY());
 
-        if (setTile(gridX, gridY, 2)){
-            int index = gridToArrayPos(gridX, gridY);
-            if (freeIndeces[index]){
-                tiles.addIcon(index, new X(gridToMousePos(gridX) + BoardInfo.entryWidth / 2, gridToMousePos(gridY) + BoardInfo.entryWidth / 2));
-                freeIndeces[index] = false;
-                // while (freeIndeces[index] == false) {
-                //     index = (int) (Math.random()*(freeIndeces.length+1));
-                // }
-                // System.out.println(index);
-                // gridX = arrayToGridX(index);
-                // gridY = arrayToGridY(index);
-                // tiles.addIcon(index, new O(gridToMousePos(gridX) + BoardInfo.entryWidth / 2, gridToMousePos(gridY) + BoardInfo.entryWidth / 2));
-                // freeIndeces[index] = false;
-            }
+        if (setTile(gridX, gridY, 1)){
+            System.out.println("Successfully added tile");
+            // int index = gridToArrayPos(gridX, gridY);
+            // if (freeIndeces[index]){
+            //     tiles.addIcon(index, new X(gridToMousePos(gridX) + BoardInfo.entryWidth / 2, gridToMousePos(gridY) + BoardInfo.entryWidth / 2));
+            //     freeIndeces[index] = false;
+            //     // while (freeIndeces[index] == false) {
+            //     //     index = (int) (Math.random()*(freeIndeces.length+1));
+            //     // }
+            //     // System.out.println(index);
+            //     // gridX = arrayToGridX(index);
+            //     // gridY = arrayToGridY(index);
+            //     // tiles.addIcon(index, new O(gridToMousePos(gridX) + BoardInfo.entryWidth / 2, gridToMousePos(gridY) + BoardInfo.entryWidth / 2));
+            //     // freeIndeces[index] = false;
+            // }
             
         }
         this.repaint();

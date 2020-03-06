@@ -5,13 +5,12 @@ import javax.swing.JFrame;
 public class Main {
 
     public static void main(String[] iGotTha){
-        final int FRAME_WIDTH = 600;
-        final int FRAME_HEIGHT = 600;
+        final int FRAME_SIZE = 600;
         
         JFrame frame = new JFrame();
-        Board b = new Board(4);
+        Board b = new Board(6, FRAME_SIZE);
         frame.getContentPane().add(b);
-        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        frame.setSize(FRAME_SIZE, FRAME_SIZE);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
