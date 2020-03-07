@@ -7,48 +7,43 @@ import java.awt.geom.Line2D;
 
 public class Board extends JComponent implements Drawable, MouseListener, MouseMotionListener {
 
-    public int iconPixelSize;
+    public static final int MARGIN = 50;
 
     private static final long serialVersionUID = 1L;
+
     private int[][] b;
-    private int edgeSize;
-    private int pixelSize;
+    private int gridSize, boardPixelSize, iconPixelSize;
     private Grid tiles;
     private Line2D.Double[] boardLines;
     private MouseOver mouseEntry;
-    private boolean[] freeIndeces;
+    private int moves = 0;
+    private int pawn = 1;
 
     public Board(){
         this(3, 600);
     }
 
     public Board(int n, int pixels){
-        BoardInfo.setN(n);
         this.b = new int[n][n];
-        this.pixelSize = pixels;
-        this.edgeSize = n;
-        this.iconPixelSize = (pixelSize - BoardInfo.MARGIN) / edgeSize;
-        this.tiles = new Grid(n);
-        this.freeIndeces = new boolean[n * n];
-        this.boardLines = new Line2D.Double[(n * 2) - 2];
+        this.gridSize = n;
+        this.boardPixelSize = pixels;
+        this.iconPixelSize = (boardPixelSize - (2 * MARGIN)) / gridSize;
+        this.tiles = new Grid(gridSize);
+        this.boardLines = new Line2D.Double[(gridSize * 2) - 2];
         generateBoard(n);
     }
 
     public void generateBoard(int n){
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
-        
-        for (int i = 0; i < freeIndeces.length; i++){
-            freeIndeces[i] = true;
-        }
 
-        int lineLength = BoardInfo.BOARD_SIZE - (BoardInfo.MARGIN * 2);
+        int lineLength = boardPixelSize - (MARGIN * 2);
         int distBetweenLines = lineLength / n;
         int boardLinePos = 0;
         for (int i = 1; i < n; i++){
-            int marginOffset = BoardInfo.MARGIN + (i * distBetweenLines);
-            this.boardLines[boardLinePos++] = new Line2D.Double(marginOffset, BoardInfo.MARGIN, marginOffset, BoardInfo.MARGIN + lineLength);
-            this.boardLines[boardLinePos++] = new Line2D.Double(BoardInfo.MARGIN, marginOffset, BoardInfo.MARGIN + lineLength, marginOffset);
+            int marginOffset = MARGIN + (i * distBetweenLines);
+            this.boardLines[boardLinePos++] = new Line2D.Double(marginOffset, MARGIN, marginOffset, MARGIN + lineLength);
+            this.boardLines[boardLinePos++] = new Line2D.Double(MARGIN, marginOffset, MARGIN + lineLength, marginOffset);
         }
     }
 
@@ -60,7 +55,8 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
 
         Graphics2D g = (Graphics2D) gIn;
         g.setColor(Color.BLACK);
-        g.setStroke(new BasicStroke(5));
+        int strokeSize = -(gridSize / 5) + 5;
+        g.setStroke(new BasicStroke(Math.max(strokeSize, 1)));
         for (Line2D.Double l : boardLines){
             g.draw(l);
         }
@@ -68,12 +64,8 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         tiles.paintComponent(gIn);
     }
 
-    public boolean setTile(int r, int c, int pawn){
-        if (r > edgeSize - 1 || r < 0 || c > edgeSize - 1 || c < 0){
-            System.out.println("ERROR: tile is out of bounds");
-            return false;
-        }
-        if (b[r][c] != 0){
+    private boolean setTile(int r, int c, int pawn){
+        if (!isFreeTile(r, c)){
             System.out.println("Oops! Tile (" + r + ", " + c + ") is aready occupied!");
             return false;
         }
@@ -84,49 +76,100 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             tiles.removeIcon(r, c);
             return true;
         } else if (pawn < 0){
-            int rad = iconPixelSize / 2;
-            d = new O(r, c, rad, this); 
+            d = new O(r, c, this); 
         } else {
-            int width = (int) Math.sqrt((2 * iconPixelSize * iconPixelSize)) / 6;
-            d = new X(r, c, width, this);
+            d = new X(r, c, this);
         }
         tiles.addIcon(r, c, d);
+        moves++;
+
+        if (moves > (2 * gridSize - 2)){
+            if (checkForWinner()) {
+                System.out.println("Winner found!");
+            }
+        }
         return true;
     }
 
+    public boolean checkForWinner(){
+        boolean winnerFound = isWinningTile(0, 0, 1, 1, b[0][0])
+                           || isWinningTile(gridSize - 1, gridSize - 1, -1, -1, b[gridSize - 1][gridSize - 1]);
+        for (int i = 0; i < gridSize; i++){
+            if (winnerFound){
+                return true;
+            }
+            winnerFound = isWinningTile(i, 0, 0, 1, b[i][0]) || isWinningTile(0, i, 1, 0, b[0][i]);
+        }
+        return false;
+    }
+
+    public boolean isWinningTile(int r, int c, int xDir, int yDir, int player){
+        if (player == 0){
+            return false;
+        }
+        if (r > -1 && c > -1 && r < gridSize && c < gridSize){
+            if (b[r][c] != player){
+                return false;
+            }
+            return isWinningTile(r + xDir, c + yDir, xDir, yDir, player);
+        } else {
+            System.out.println("The winner is player " + player + "!");
+            return true;
+        }
+    }
+
+    public int getIconPixelSize(){
+        return iconPixelSize;
+    }
+
     public int mouseToGridPos(int mousePos){
-        if (mousePos < BoardInfo.MARGIN || mousePos > BoardInfo.MARGIN + BoardInfo.BOARD_SIZE){
+        if (mousePos < MARGIN || mousePos > boardPixelSize - MARGIN){
             return -1;
         }
-        return (mousePos - 60) / BoardInfo.entryWidth;
+        return (mousePos - MARGIN) / iconPixelSize;
     }
 
     public int gridToMousePos(int gridPos){
-        if (gridPos < 0 || gridPos > this.edgeSize - 1){
+        if (gridPos < 0 || gridPos > gridSize - 1){
             return -1;
         }
-        return (gridPos * BoardInfo.entryWidth) + BoardInfo.MARGIN;
+        return (gridPos * iconPixelSize) + MARGIN;
     }
 
-    public int gridToArrayPos(int gridX, int gridY){
-        if (gridX == -1 || gridY == -1){
-            return -1;
-        } 
-        return (gridY * (edgeSize)) + gridX;
-    }
-
-    public int arrayToGridX(int arrPos){
-        if (arrPos < 0 || arrPos > edgeSize - 1){
-            return -1;
+    public boolean isFreeTile(int r, int c){
+        if (r > gridSize - 1 || r < 0 || c > gridSize - 1 || c < 0){
+            System.out.println("ERROR: tile is out of bounds");
+            return false;
         }
-        return arrPos / edgeSize;
+        if (b[r][c] != 0){
+            return false;
+        }
+        return true;
     }
 
-    public int arrayToGridY(int arrPos){
-        if (arrPos < 0 || arrPos > edgeSize - 1){
-            return -1;
+    @Override
+    public void mouseReleased(MouseEvent e) { 
+        int gridX = mouseToGridPos(e.getX());
+        int gridY = mouseToGridPos(e.getY());
+
+        if (setTile(gridX, gridY, pawn*=-1)){
+            System.out.println("Successfully added tile");
+            
         }
-        return arrPos % edgeSize;
+        this.repaint();
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e){
+        int gridX = mouseToGridPos(e.getX());
+        int gridY = mouseToGridPos(e.getY());
+        
+        if (gridX > -1 && gridX < gridSize && gridY > -1 && gridY < gridSize && isFreeTile(gridX, gridY)){
+            mouseEntry = new MouseOver(gridX, gridY, this);
+        } else {
+            mouseEntry = null;
+        }
+        this.repaint();
     }
 
     @Override
@@ -140,44 +183,6 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
    
     @Override
     public void mousePressed(MouseEvent e) { }
-
-    @Override
-    public void mouseReleased(MouseEvent e) { 
-        int gridX = mouseToGridPos(e.getX());
-        int gridY = mouseToGridPos(e.getY());
-
-        if (setTile(gridX, gridY, 1)){
-            System.out.println("Successfully added tile");
-            // int index = gridToArrayPos(gridX, gridY);
-            // if (freeIndeces[index]){
-            //     tiles.addIcon(index, new X(gridToMousePos(gridX) + BoardInfo.entryWidth / 2, gridToMousePos(gridY) + BoardInfo.entryWidth / 2));
-            //     freeIndeces[index] = false;
-            //     // while (freeIndeces[index] == false) {
-            //     //     index = (int) (Math.random()*(freeIndeces.length+1));
-            //     // }
-            //     // System.out.println(index);
-            //     // gridX = arrayToGridX(index);
-            //     // gridY = arrayToGridY(index);
-            //     // tiles.addIcon(index, new O(gridToMousePos(gridX) + BoardInfo.entryWidth / 2, gridToMousePos(gridY) + BoardInfo.entryWidth / 2));
-            //     // freeIndeces[index] = false;
-            // }
-            
-        }
-        this.repaint();
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e){
-        int gridX = mouseToGridPos(e.getX());
-        int gridY = mouseToGridPos(e.getY());
-        
-        if (gridX > -1 && gridX < edgeSize && gridY > -1 && gridY < edgeSize){
-            mouseEntry = new MouseOver(gridToMousePos(gridX), gridToMousePos(gridY));
-        } else {
-            mouseEntry = null;
-        }
-        this.repaint();
-    }
 
     @Override
     public void mouseDragged(MouseEvent e){ }

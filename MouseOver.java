@@ -5,8 +5,9 @@ public class MouseOver implements Drawable {
 
     private Rectangle2D.Double mouseSpace;
 
-    public MouseOver(int x, int y){
-        mouseSpace = new Rectangle2D.Double(x, y, BoardInfo.entryWidth, BoardInfo.entryWidth);
+    public MouseOver(int x, int y, Board b){
+        int width = b.getIconPixelSize();
+        mouseSpace = new Rectangle2D.Double(b.gridToMousePos(x), b.gridToMousePos(y), width, width);
     }
 
     @Override
