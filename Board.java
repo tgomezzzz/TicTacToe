@@ -4,6 +4,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
+import java.util.concurrent.TimeUnit;
 
 public class Board extends JComponent implements Drawable, MouseListener, MouseMotionListener {
 
@@ -16,10 +17,11 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
     private Grid tiles;
     private Line2D.Double[] boardLines;
     private MouseOver mouseEntry;
+    private TileSet winningTiles;
+    private Computer cpu;
     private TextBox t;
     private int moves = 0;
-    private int pawn = -1;
-    private boolean winner = false;
+    private boolean gameOver = false;
 
     public Board(){
         this(3, 600);
@@ -33,6 +35,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         this.tiles = new Grid(gridSize);
         this.boardLines = new Line2D.Double[(gridSize * 2) - 2];
         this.t = new TextBox(boardPixelSize/2, boardPixelSize, "Welcome to Tic Tac Toe!");
+        this.cpu = new Computer(this);
         generateBoard();
     }
 
@@ -57,19 +60,25 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         }
 
         Graphics2D g = (Graphics2D) gIn;
-        g.setColor(Color.BLACK);
         int strokeSize = -(gridSize / 5) + 5;
         g.setStroke(new BasicStroke(Math.max(strokeSize, 1)));
+
+        if (winningTiles != null) {
+            winningTiles.paintComponent(gIn);
+        }
+
+        g.setColor(Color.BLACK);
         for (Line2D.Double l : boardLines){
             g.draw(l);
         }
+
         tiles.paintComponent(gIn);
         t.paintComponent(gIn);
     }
 
-    private boolean setTile(int r, int c, int pawn){
+    public boolean setTile(int r, int c, int pawn){
         if (!isFreeTile(r, c)){
-            System.out.println("Oops! Tile (" + c + ", " + r + ") is aready occupied!");
+            System.out.println("Oops! Tile (" + r + ", " + c + ") is aready occupied!");
             return false;
         }
 
@@ -80,23 +89,25 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             return true;
         } else if (pawn < 0){
             d = new O(r, c, this); 
-            t.setText("Player's turn!");
         } else {
             d = new X(r, c, this);
-            t.setText("Computer's turn!");
         }
         tiles.addIcon(r, c, d);
         moves++;
 
-        if (moves > (2 * gridSize - 2) && !winner){
-            winner = checkForWinner();
+        if (moves > (2 * gridSize - 2) && !gameOver){
+            gameOver = checkForWinner();
+        }
+        if (moves > (gridSize * gridSize) - 1) {
+            gameOver = true;
+            t.setText("It's a tie!");
         }
         return true;
     }
 
     public boolean checkForWinner(){
         boolean winnerFound = isWinningTile(0, 0, 1, 1, b[0][0])
-                           || isWinningTile(gridSize - 1, gridSize - 1, -1, -1, b[gridSize - 1][gridSize - 1]);
+                           || isWinningTile(0, gridSize - 1, 1, -1, b[0][gridSize - 1]);
         for (int i = 0; i < gridSize; i++){
             if (winnerFound){
                 return true;
@@ -121,8 +132,17 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             } else {
                 t.setText("You won!");
             }
+            winningTiles = new TileSet(r - xDir, c - yDir, xDir, yDir, this);
             return true;
         }
+    }
+
+    public boolean gameIsOver(){
+        return gameOver;
+    }
+
+    public int getGridSize(){
+        return gridSize;
     }
 
     public int getIconPixelSize(){
@@ -156,16 +176,21 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
 
     @Override
     public void mouseReleased(MouseEvent e) { 
-        int gridX = mouseToGridPos(e.getX());
-        int gridY = mouseToGridPos(e.getY());
-        setTile(gridX, gridY, pawn *= -1);
+        if (gameOver) {
+            return;
+        }
+        int gridX = mouseToGridPos(e.getY());
+        int gridY = mouseToGridPos(e.getX());
+        if (setTile(gridX, gridY, 1)) { 
+            cpu.move();
+        }
         this.repaint();
     }
 
     @Override
     public void mouseMoved(MouseEvent e){
-        int gridX = mouseToGridPos(e.getX());
-        int gridY = mouseToGridPos(e.getY());
+        int gridX = mouseToGridPos(e.getY());
+        int gridY = mouseToGridPos(e.getX());
         if (gridX > -1 && gridX < gridSize && gridY > -1 && gridY < gridSize && isFreeTile(gridX, gridY)){
             mouseEntry = new MouseOver(gridX, gridY, this);
         } else {
