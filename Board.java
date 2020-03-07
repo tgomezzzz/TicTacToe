@@ -30,17 +30,17 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         this.iconPixelSize = (boardPixelSize - (2 * MARGIN)) / gridSize;
         this.tiles = new Grid(gridSize);
         this.boardLines = new Line2D.Double[(gridSize * 2) - 2];
-        generateBoard(n);
+        generateBoard();
     }
 
-    public void generateBoard(int n){
+    public void generateBoard(){
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
 
         int lineLength = boardPixelSize - (MARGIN * 2);
-        int distBetweenLines = lineLength / n;
+        int distBetweenLines = lineLength / gridSize;
         int boardLinePos = 0;
-        for (int i = 1; i < n; i++){
+        for (int i = 1; i < gridSize; i++){
             int marginOffset = MARGIN + (i * distBetweenLines);
             this.boardLines[boardLinePos++] = new Line2D.Double(marginOffset, MARGIN, marginOffset, MARGIN + lineLength);
             this.boardLines[boardLinePos++] = new Line2D.Double(MARGIN, marginOffset, MARGIN + lineLength, marginOffset);
@@ -60,13 +60,12 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         for (Line2D.Double l : boardLines){
             g.draw(l);
         }
-
         tiles.paintComponent(gIn);
     }
 
     private boolean setTile(int r, int c, int pawn){
         if (!isFreeTile(r, c)){
-            System.out.println("Oops! Tile (" + r + ", " + c + ") is aready occupied!");
+            System.out.println("Oops! Tile (" + c + ", " + r + ") is aready occupied!");
             return false;
         }
 
@@ -151,11 +150,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
     public void mouseReleased(MouseEvent e) { 
         int gridX = mouseToGridPos(e.getX());
         int gridY = mouseToGridPos(e.getY());
-
-        if (setTile(gridX, gridY, pawn*=-1)){
-            System.out.println("Successfully added tile");
-            
-        }
+        setTile(gridX, gridY, pawn *= -1);
         this.repaint();
     }
 
@@ -163,7 +158,6 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
     public void mouseMoved(MouseEvent e){
         int gridX = mouseToGridPos(e.getX());
         int gridY = mouseToGridPos(e.getY());
-        
         if (gridX > -1 && gridX < gridSize && gridY > -1 && gridY < gridSize && isFreeTile(gridX, gridY)){
             mouseEntry = new MouseOver(gridX, gridY, this);
         } else {
