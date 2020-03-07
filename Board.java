@@ -16,8 +16,10 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
     private Grid tiles;
     private Line2D.Double[] boardLines;
     private MouseOver mouseEntry;
+    private TextBox t;
     private int moves = 0;
-    private int pawn = 1;
+    private int pawn = -1;
+    private boolean winner = false;
 
     public Board(){
         this(3, 600);
@@ -30,6 +32,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         this.iconPixelSize = (boardPixelSize - (2 * MARGIN)) / gridSize;
         this.tiles = new Grid(gridSize);
         this.boardLines = new Line2D.Double[(gridSize * 2) - 2];
+        this.t = new TextBox(boardPixelSize/2, boardPixelSize, "Welcome to Tic Tac Toe!");
         generateBoard();
     }
 
@@ -61,6 +64,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             g.draw(l);
         }
         tiles.paintComponent(gIn);
+        t.paintComponent(gIn);
     }
 
     private boolean setTile(int r, int c, int pawn){
@@ -76,16 +80,16 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             return true;
         } else if (pawn < 0){
             d = new O(r, c, this); 
+            t.setText("Player's turn!");
         } else {
             d = new X(r, c, this);
+            t.setText("Computer's turn!");
         }
         tiles.addIcon(r, c, d);
         moves++;
 
-        if (moves > (2 * gridSize - 2)){
-            if (checkForWinner()) {
-                System.out.println("Winner found!");
-            }
+        if (moves > (2 * gridSize - 2) && !winner){
+            winner = checkForWinner();
         }
         return true;
     }
@@ -112,7 +116,11 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             }
             return isWinningTile(r + xDir, c + yDir, xDir, yDir, player);
         } else {
-            System.out.println("The winner is player " + player + "!");
+            if (player == -1){
+                t.setText("The computer won!");
+            } else {
+                t.setText("You won!");
+            }
             return true;
         }
     }
