@@ -19,7 +19,7 @@ public class Main {
                 }
                 break;
             } catch (NumberFormatException e){
-                JOptionPane.showMessageDialog(null, "Please enter a numerical value between 1 and 25", "Oops", 0);
+                JOptionPane.showMessageDialog(null, "Please enter an integer value between 1 and 25", "Oops", 0);
             }
         }
 

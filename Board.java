@@ -10,6 +10,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
 
     public static final int MARGIN = 50;
 
+    private static final String[] TITLES = {" Tic", " Tac", " Toe"};
     private static final long serialVersionUID = 1L;
 
     private int[][] b;
@@ -34,9 +35,18 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         this.iconPixelSize = (boardPixelSize - (2 * MARGIN)) / gridSize;
         this.tiles = new Grid(gridSize);
         this.boardLines = new Line2D.Double[(gridSize * 2) - 2];
-        this.t = new TextBox(boardPixelSize/2, boardPixelSize, "Welcome to Tic Tac Toe!");
+        this.t = new TextBox(boardPixelSize/2, boardPixelSize, generateTitle());
         this.cpu = new Computer(this);
         generateBoard();
+    }
+
+    private String generateTitle() {
+        StringBuilder s = new StringBuilder("Welcome to");
+        for (int i = 0; i < gridSize; i++){
+            s.append(TITLES[i % TITLES.length]);
+        }
+        s.append("!");
+        return s.toString();
     }
 
     public void generateBoard(){
@@ -108,7 +118,6 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
 
         if (moves > (2 * gridSize - 2) && !gameOver){
             gameOver = checkForWinner();
-            System.out.println("checking for winner");
         }
         
         return true;
@@ -191,7 +200,9 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         int gridX = mouseToGridPos(e.getY());
         int gridY = mouseToGridPos(e.getX());
         if (setTile(gridX, gridY, 1)) { 
-            cpu.move();
+            if (!gameOver) {
+                cpu.move();
+            }
         }
         this.repaint();
     }
