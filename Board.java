@@ -82,6 +82,10 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             return false;
         }
 
+        if (gameOver){
+            return false;
+        }
+
         b[r][c] = pawn;
         Drawable d;
         if (pawn == 0) {
@@ -95,13 +99,18 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         tiles.addIcon(r, c, d);
         moves++;
 
-        if (moves > (2 * gridSize - 2) && !gameOver){
-            gameOver = checkForWinner();
-        }
         if (moves > (gridSize * gridSize) - 1) {
             gameOver = true;
-            t.setText("It's a tie!");
+            if (!checkForWinner()){
+                t.setText("It's a tie!");
+            }
         }
+
+        if (moves > (2 * gridSize - 2) && !gameOver){
+            gameOver = checkForWinner();
+            System.out.println("checking for winner");
+        }
+        
         return true;
     }
 

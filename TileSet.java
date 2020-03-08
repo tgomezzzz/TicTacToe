@@ -17,7 +17,7 @@ public class TileSet implements Drawable {
     @Override
     public void paintComponent(Graphics gIn){
         Graphics2D g = (Graphics2D) gIn;
-        g.setColor(Color.GREEN);
+        g.setColor(new Color(160, 255, 125));
         for (Rectangle2D.Double r : tiles){
             g.fill(r);
             g.draw(r);

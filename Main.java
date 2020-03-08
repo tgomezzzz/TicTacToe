@@ -27,7 +27,7 @@ public class Main {
         JFrame frame = new JFrame();
         frame.getContentPane().add(b, BorderLayout.CENTER);
         frame.pack();
-        frame.setSize(FRAME_SIZE, FRAME_SIZE + 100);
+        frame.setSize(FRAME_SIZE, FRAME_SIZE + 50);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
