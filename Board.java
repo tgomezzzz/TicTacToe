@@ -22,7 +22,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
     private Computer cpu;
     private TextBox t;
     private int moves = 0;
-    private boolean gameOver = false;
+    private boolean gameOver;
 
     public Board(){
         this(3, 600);
@@ -35,8 +35,9 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         this.iconPixelSize = (boardPixelSize - (2 * MARGIN)) / gridSize;
         this.tiles = new Grid(gridSize);
         this.boardLines = new Line2D.Double[(gridSize * 2) - 2];
-        this.t = new TextBox(boardPixelSize/2, boardPixelSize, generateTitle());
+        this.t = new TextBox(boardPixelSize / 2, boardPixelSize, generateTitle());
         this.cpu = new Computer(this);
+        this.gameOver = false;
         generateBoard();
     }
 
@@ -119,18 +120,20 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         if (moves > (2 * gridSize - 2) && !gameOver){
             gameOver = checkForWinner();
         }
-        
         return true;
     }
 
     public boolean checkForWinner(){
         boolean winnerFound = isWinningTile(0, 0, 1, 1, b[0][0])
                            || isWinningTile(0, gridSize - 1, 1, -1, b[0][gridSize - 1]);
+        if (winnerFound){
+            return true;
+        }
         for (int i = 0; i < gridSize; i++){
+            winnerFound = isWinningTile(i, 0, 0, 1, b[i][0]) || isWinningTile(0, i, 1, 0, b[0][i]);
             if (winnerFound){
                 return true;
             }
-            winnerFound = isWinningTile(i, 0, 0, 1, b[i][0]) || isWinningTile(0, i, 1, 0, b[0][i]);
         }
         return false;
     }
