@@ -4,7 +4,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
-import java.util.concurrent.TimeUnit;
 
 public class Board extends JComponent implements Drawable, MouseListener, MouseMotionListener {
 
@@ -89,7 +88,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
 
     public boolean setTile(int r, int c, int pawn){
         if (!isFreeTile(r, c)){
-            System.out.println("Oops! Tile (" + r + ", " + c + ") is aready occupied!");
+            t.setText("Oops! That tile is aready occupied.");
             return false;
         }
 
@@ -108,6 +107,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             d = new X(r, c, this);
         }
         tiles.addIcon(r, c, d);
+        t.setText("It's your move!");
         moves++;
 
         if (moves > (gridSize * gridSize) - 1) {
@@ -149,9 +149,9 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             return isWinningTile(r + xDir, c + yDir, xDir, yDir, player);
         } else {
             if (player == -1){
-                t.setText("The computer won!");
+                t.setText("The computer won. Good game!");
             } else {
-                t.setText("You won!");
+                t.setText("You won, congratulations!");
             }
             winningTiles = new TileSet(r - xDir, c - yDir, xDir, yDir, this);
             return true;

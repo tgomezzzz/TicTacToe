@@ -6,10 +6,13 @@ public class Main {
 
     public static final int FRAME_SIZE = 600;
     public static void main(String[] iGotTha){
+        for (String s : iGotTha) {
+            System.out.print(s);
+        }
         int n;
         while (true) {
             try {
-                String in = JOptionPane.showInputDialog(null, "How many rows and columns would you like?");
+                String in = JOptionPane.showInputDialog("How many rows and columns would you like?");
                 if (in == null){
                     System.exit(0);
                 }
