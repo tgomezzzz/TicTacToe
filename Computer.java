@@ -3,18 +3,14 @@ import java.util.concurrent.*;
 public class Computer {
 
     private Board b;
-    public Computer(Board board){
+    private Thinkable AI;
+    public Computer(Board board, Thinkable inAI){
         this.b = board;
+        this.AI = inAI;
     }
 
     public void move() {
-        int randX = (int) (Math.random() * b.getGridSize());
-        int randY = (int) (Math.random() * b.getGridSize());
-        while (!b.isFreeTile(randX, randY) && !b.gameIsOver()) {
-            randX = (int) (Math.random() * b.getGridSize());
-            randY = (int) (Math.random() * b.getGridSize());
-        }
-        b.setTile(randX, randY, -1);
+        AI.move(b);
     }
 
 

@@ -22,6 +22,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
     private TextBox t;
     private int moves = 0;
     private boolean gameOver;
+    private int[] lastMove = new int[2];
 
     public Board(){
         this(3, 600);
@@ -35,7 +36,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         this.tiles = new Grid(gridSize);
         this.boardLines = new Line2D.Double[(gridSize * 2) - 2];
         this.t = new TextBox(boardPixelSize / 2, boardPixelSize, generateTitle());
-        this.cpu = new Computer(this);
+        this.cpu = new Computer(this, new BasicAI());
         this.gameOver = false;
         generateBoard();
     }
@@ -108,6 +109,8 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         }
         tiles.addIcon(r, c, d);
         t.setText("It's your move!");
+        lastMove[0] = r;
+        lastMove[1] = c;
         moves++;
 
         if (moves > (gridSize * gridSize) - 1) {
@@ -186,13 +189,16 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
 
     public boolean isFreeTile(int r, int c){
         if (r > gridSize - 1 || r < 0 || c > gridSize - 1 || c < 0){
-            System.out.println("ERROR: tile is out of bounds");
             return false;
         }
         if (b[r][c] != 0){
             return false;
         }
         return true;
+    }
+
+    public int[] getLastMove() {
+        return lastMove;
     }
 
     @Override
