@@ -29,8 +29,6 @@ public class BasicAI implements Thinkable {
         } else {
             b.setTile(compMove[0], compMove[1], -1);
         }
-        System.out.println("Moving at (" + compMove[0] + ", " + compMove[1] + ")");
-
     }
 
     public int[] blockPlayerWin(Board b){
@@ -64,10 +62,8 @@ public class BasicAI implements Thinkable {
     }
 
     public int[] checkPlayerWin(int x, int y, int xDir, int yDir, int count, boolean seenBlankTile, int[] m, Board b) {
-        System.out.println("Checking (" + x + ", " + y + ") with count " + count);
         if (x < 0 || x > b.getGridSize() - 1 || y < 0 || y > b.getGridSize() - 1) {
             if (count >= b.getGridSize() - 1) {
-                System.out.println("Should be moving at (" + m[0] + ", " + m[1] + ")");
                 return m;
             } else {
                 return null;
@@ -76,16 +72,13 @@ public class BasicAI implements Thinkable {
         int tile;
         if ((tile = b.getTile(x, y)) != 1){
             if (tile == -1) {
-                System.out.println("exiting after computer tile found");
                 return null;
             } else if (!seenBlankTile){
-                System.out.println("Setting move to (" + x + ", " + y + ")");
                 seenBlankTile = true;
                 m = new int[2];
                 m[0] = x;
                 m[1] = y;
             } else if (seenBlankTile) {
-                System.out.println("Exiting after second blank");
                 return null;
             }
         }
