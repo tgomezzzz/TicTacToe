@@ -126,6 +126,13 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         return true;
     }
 
+    public int getTile(int r, int c) {
+        if (r < 0 || r > gridSize - 1 || c < 0 || c > gridSize - 1) {
+            return 0;
+        }
+        return b[r][c];
+    }
+
     public boolean checkForWinner(){
         boolean winnerFound = isWinningTile(0, 0, 1, 1, b[0][0])
                            || isWinningTile(0, gridSize - 1, 1, -1, b[0][gridSize - 1]);
