@@ -29,6 +29,7 @@ public class BasicAI implements Thinkable {
         } else {
             b.setTile(compMove[0], compMove[1], -1);
         }
+        b.setText("It's your turn!");
     }
 
     public int[] blockPlayerWin(Board b){

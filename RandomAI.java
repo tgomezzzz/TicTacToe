@@ -10,6 +10,7 @@ public class RandomAI implements Thinkable{
             randX = (int) (Math.random() * b.getGridSize());
             randY = (int) (Math.random() * b.getGridSize());
         }
+        b.setText("It's your turn!");
         b.setTile(randX, randY, -1);
     }
 

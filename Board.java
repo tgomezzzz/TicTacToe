@@ -14,9 +14,10 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
 
     private int[][] b;
     private int gridSize, boardPixelSize, iconPixelSize;
+    private int pawn = 1;
     private Grid tiles;
     private Line2D.Double[] boardLines;
-    private MouseOver mouseEntry;
+    private MouseOver mouseOver;
     private TileSet winningTiles;
     private Computer cpu;
     private TextBox t;
@@ -25,10 +26,10 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
     private int[] lastMove = new int[2];
 
     public Board(){
-        this(3, 600);
+        this(3, 600, new TwoPlayer());
     }
 
-    public Board(int n, int pixels){
+    public Board(int n, int pixels, Thinkable t){
         this.b = new int[n][n];
         this.gridSize = n;
         this.boardPixelSize = pixels;
@@ -36,7 +37,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         this.tiles = new Grid(gridSize);
         this.boardLines = new Line2D.Double[(gridSize * 2) - 2];
         this.t = new TextBox(boardPixelSize / 2, boardPixelSize, generateTitle());
-        this.cpu = new Computer(this, new BasicAI());
+        this.cpu = new Computer(this, t);
         this.gameOver = false;
         generateBoard();
     }
@@ -66,8 +67,8 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
 
     @Override 
     public void paintComponent(Graphics gIn){
-        if (mouseEntry != null){
-            mouseEntry.paintComponent(gIn);
+        if (mouseOver != null) {
+            mouseOver.paintComponent(gIn);
         }
 
         Graphics2D g = (Graphics2D) gIn;
@@ -89,7 +90,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
 
     public boolean setTile(int r, int c, int pawn){
         if (!isFreeTile(r, c)){
-            t.setText("Oops! That tile is aready occupied.");
+            setText("Oops! That tile is aready occupied.");
             return false;
         }
 
@@ -108,7 +109,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             d = new X(r, c, this);
         }
         tiles.addIcon(r, c, d);
-        t.setText("It's your move!");
+        //t.setText("It's your move!");
         lastMove[0] = r;
         lastMove[1] = c;
         moves++;
@@ -116,7 +117,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         if (moves > (gridSize * gridSize) - 1) {
             gameOver = true;
             if (!checkForWinner()){
-                t.setText("It's a tie!");
+                setText("It's a tie!");
             }
         }
 
@@ -159,25 +160,13 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             return isWinningTile(r + xDir, c + yDir, xDir, yDir, player);
         } else {
             if (player == -1){
-                t.setText("The computer won. Good game!");
+                setText("The computer won. Good game!");
             } else {
-                t.setText("You won, congratulations!");
+                setText("You won, congratulations!");
             }
             winningTiles = new TileSet(r - xDir, c - yDir, xDir, yDir, this);
             return true;
         }
-    }
-
-    public boolean gameIsOver(){
-        return gameOver;
-    }
-
-    public int getGridSize(){
-        return gridSize;
-    }
-
-    public int getIconPixelSize(){
-        return iconPixelSize;
     }
 
     public int mouseToGridPos(int mousePos){
@@ -204,8 +193,43 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         return true;
     }
 
+    public boolean gameIsOver(){
+        return gameOver;
+    }
+
+    public int getGridSize(){
+        return gridSize;
+    }
+
+    public int getIconPixelSize(){
+        return iconPixelSize;
+    }
+
     public int[] getLastMove() {
         return lastMove;
+    }
+
+    public int getPawn() {
+        return pawn;
+    }
+
+    public void setPawn(int newPawn){
+        if (newPawn < -1 || newPawn > 1) {
+            return;
+        }
+        pawn = newPawn;
+    }
+
+    public void setMouseOver(int r, int c){
+        if (r > -1 && r < gridSize && c > -1 && c < gridSize && isFreeTile(r, c)){
+            mouseOver = new MouseOver(r, c, this);
+        } else {
+            mouseOver = null;
+        }
+    }
+
+    public void setText(String s) {
+        t.setText(s);
     }
 
     @Override
@@ -215,7 +239,8 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
         }
         int gridX = mouseToGridPos(e.getY());
         int gridY = mouseToGridPos(e.getX());
-        if (setTile(gridX, gridY, 1)) { 
+
+        if (setTile(gridX, gridY, pawn)) { 
             if (!gameOver) {
                 cpu.move();
             }
@@ -227,11 +252,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
     public void mouseMoved(MouseEvent e){
         int gridX = mouseToGridPos(e.getY());
         int gridY = mouseToGridPos(e.getX());
-        if (gridX > -1 && gridX < gridSize && gridY > -1 && gridY < gridSize && isFreeTile(gridX, gridY)){
-            mouseEntry = new MouseOver(gridX, gridY, this);
-        } else {
-            mouseEntry = null;
-        }
+        setMouseOver(gridX, gridY);
         this.repaint();
     }
 
