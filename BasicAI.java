@@ -9,6 +9,11 @@ import java.util.ArrayList;
  */
 public class BasicAI implements Thinkable {
 
+    String[] WIN_MESSAGES = {
+        "The computer won. Good game!",
+        "You won, well played!"
+    };
+    
     private final int[][] SURROUNDING = {
         {-1, 0, 1},
         {-1,    1},
@@ -30,6 +35,11 @@ public class BasicAI implements Thinkable {
             b.setTile(compMove[0], compMove[1], -1);
         }
         b.setText("It's your turn!");
+    }
+
+    @Override
+    public String getWinnerText(int player) {
+        return WIN_MESSAGES[(player + 1) / 2];
     }
 
     public int[] blockPlayerWin(Board b){

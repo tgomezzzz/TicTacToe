@@ -159,11 +159,7 @@ public class Board extends JComponent implements Drawable, MouseListener, MouseM
             }
             return isWinningTile(r + xDir, c + yDir, xDir, yDir, player);
         } else {
-            if (player == -1){
-                setText("The computer won. Good game!");
-            } else {
-                setText("You won, congratulations!");
-            }
+            setText(cpu.getWinMessage(player));
             winningTiles = new TileSet(r - xDir, c - yDir, xDir, yDir, this);
             return true;
         }

@@ -13,5 +13,9 @@ public class Computer {
         AI.move(b);
     }
 
+    public String getWinMessage(int player) {
+        return AI.getWinnerText(player);
+    }
+
 
 }
